@@ -7,6 +7,7 @@ license = { text = "MIT" }
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-ra"
 
 [tool.ruff]
