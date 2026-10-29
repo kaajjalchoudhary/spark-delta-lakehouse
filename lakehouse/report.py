@@ -21,7 +21,7 @@ def _show(df, n: int = 50) -> str:
     widths = [max(len(c), *(len(str(r[c])) for r in rows)) for c in cols]
 
     def line(values) -> str:
-        return "  " + "  ".join(str(v).ljust(w) for v, w in zip(values, widths))
+        return "  " + "  ".join(str(v).ljust(w) for v, w in zip(values, widths, strict=True))
 
     return "\n".join([line(cols), line("-" * w for w in widths), *(line(r[c] for c in cols) for r in rows)])
 

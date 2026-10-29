@@ -59,7 +59,9 @@ def merge_scd2(
             .select(key, F.col("row_hash").alias("_current_hash"), F.col("valid_from").alias("_current_from"))
         )
     else:
-        current = spark.createDataFrame([], f"{key} {dict(batch.dtypes)[key]}, _current_hash string, _current_from timestamp")
+        current = spark.createDataFrame(
+            [], f"{key} {dict(batch.dtypes)[key]}, _current_hash string, _current_from timestamp"
+        )
 
     by_time = Window.partitionBy(key).orderBy("valid_from")
     versions = (

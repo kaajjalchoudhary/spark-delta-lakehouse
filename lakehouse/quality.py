@@ -102,5 +102,13 @@ def check_gold_reconciles(spark: SparkSession, lake: Lake, dates: list[date], su
     )
     tolerance = 0.005 * (groups or 1) + 1e-6  # per-group rounding to cents
     diff = abs((silver_total or 0.0) - (gold_total or 0.0))
-    suite.add("gold.daily_city_metrics.trips_reconcile", silver_trips == gold_trips, f"silver {silver_trips} vs gold {gold_trips}")
-    suite.add("gold.daily_city_metrics.fares_reconcile", diff <= tolerance, f"difference {diff:.4f} (tolerance {tolerance:.4f})")
+    suite.add(
+        "gold.daily_city_metrics.trips_reconcile",
+        silver_trips == gold_trips,
+        f"silver {silver_trips} vs gold {gold_trips}",
+    )
+    suite.add(
+        "gold.daily_city_metrics.fares_reconcile",
+        diff <= tolerance,
+        f"difference {diff:.4f} (tolerance {tolerance:.4f})",
+    )
