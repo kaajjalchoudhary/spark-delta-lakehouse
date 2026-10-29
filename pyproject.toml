@@ -1,0 +1,17 @@
+[project]
+name = "spark-delta-lakehouse"
+version = "1.0.0"
+description = "Medallion lakehouse on Apache Spark and Delta Lake with SCD2, MERGE upserts and data-quality gates."
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 125
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP"]
