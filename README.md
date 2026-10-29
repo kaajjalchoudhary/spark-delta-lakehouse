@@ -89,6 +89,45 @@ docker build -t lakehouse .
 docker run --rm -v "$PWD/lake:/data/lake" lakehouse
 ```
 
+## Sample output
+
+From a CI run over 14 days of generated data. Every CI run publishes this report on its
+[run summary page](https://github.com/kaajjalchoudhary/spark-delta-lakehouse/actions/workflows/ci.yml).
+
+```
+Totals by city (gold.daily_city_metrics)
+  city    currency  trips  cancel_rate  gross_fares  tips     avg_p50_min
+  Dubai   AED       459    0.068        12624.4      634.0    19.5
+  London  GBP       1474   0.083        22560.4      988.0    19.2
+  Mumbai  INR       1492   0.076        237291.4     17910.0  19.3
+
+Quarantined lines (silver.trips_quarantine)
+  reason                               count
+  dropoff_before_pickup                19
+  malformed_or_missing_required_field  7
+  negative_fare                        22
+
+Undeclared fields seen in the trip feed: ['surge_multiplier']
+```
+
+Each batch also writes a run record (excerpt):
+
+```json
+{
+  "batch_date": "2026-01-14",
+  "seconds": 9.0,
+  "drivers": {"changes_in_batch": 6, "new_versions": 5},
+  "trips": {
+    "events": 258, "valid": 253, "quarantined": 5, "upserted_trips": 246,
+    "affected_dates": ["2026-01-13", "2026-01-14"],
+    "unexpected_fields": ["surge_multiplier"]
+  }
+}
+```
+
+Six driver events produced five new versions because one was a re-send with nothing changed,
+and the batch for the 14th also rebuilt gold for the 13th because late events arrived.
+
 ## How each layer works
 
 ### Bronze: keep exactly what arrived

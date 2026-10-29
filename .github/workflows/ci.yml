@@ -43,7 +43,7 @@ jobs:
           python -m lakehouse run --days 14
           python -m lakehouse process --date 2026-01-05
           python -m lakehouse maintain
-          python -m lakehouse report | tee report.txt
+          python -m lakehouse report | grep -v '^:: loading settings' | tee report.txt
 
       - name: Publish the report to the run summary
         run: |

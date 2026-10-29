@@ -61,5 +61,5 @@ def build_report(spark: SparkSession, lake: Lake) -> str:
         path = lake.table(layer, name)
         if exists(spark, path):
             last = DeltaTable.forPath(spark, path).history(1).select("version", "operation").first()
-            out.append(f"  {layer}.{name:<24} v{last.version:<4} last op: {last.operation}")
+            out.append(f"  {layer + '.' + name:<32} v{last.version:<4} last op: {last.operation}")
     return "\n".join(out)
