@@ -18,6 +18,9 @@ def get_spark(app_name: str = "lakehouse") -> SparkSession:
         .config("spark.sql.shuffle.partitions", os.getenv("SPARK_SHUFFLE_PARTITIONS", "4"))
         .config("spark.sql.session.timeZone", "UTC")
         .config("spark.ui.enabled", "false")
+        .config("spark.ui.showConsoleProgress", "false")
+        # VACUUM lists files with this many tasks (default 10,000); far too many for local runs.
+        .config("spark.sql.sources.parallelPartitionDiscovery.parallelism", "8")
         .config("spark.driver.memory", os.getenv("SPARK_DRIVER_MEMORY", "2g"))
         .config("spark.databricks.delta.snapshotPartitions", "2")
         # VACUUM below the 7-day default is only for the local demo of maintenance.

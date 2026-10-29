@@ -43,4 +43,17 @@ jobs:
           python -m lakehouse run --days 14
           python -m lakehouse process --date 2026-01-05
           python -m lakehouse maintain
-          python -m lakehouse report
+          python -m lakehouse report | tee report.txt
+
+      - name: Publish the report to the run summary
+        run: |
+          {
+            echo "## Lakehouse report (14 daily batches)"
+            echo '```'
+            cat report.txt
+            echo '```'
+            echo "### Run record for the last batch"
+            echo '```json'
+            cat lake/_runs/2026-01-14.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
