@@ -24,7 +24,7 @@ jobs:
           cache: pip
 
       - name: Cache Delta Lake jars
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.ivy2
           key: ivy-${{ hashFiles('requirements.txt') }}
