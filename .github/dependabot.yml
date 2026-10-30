@@ -1,0 +1,22 @@
+# Monthly PRs for Python dependencies and GitHub Actions. CI runs the full pipeline on
+# every PR, so an update is only merged once a real 14-day run passes.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: monthly
+    ignore:
+      # Spark and Delta majors need a coordinated upgrade (Scala build, Delta compatibility).
+      - dependency-name: pyspark
+        update-types: ["version-update:semver-major"]
+      - dependency-name: delta-spark
+        update-types: ["version-update:semver-major"]
+    groups:
+      dev-tools:
+        patterns: ["pytest", "ruff"]
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: monthly
