@@ -1,4 +1,4 @@
 pyspark==3.5.3
-delta-spark==3.2.1
+delta-spark==3.3.3
 pytest>=8,<10
 ruff>=0.6,<1
