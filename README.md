@@ -27,6 +27,7 @@ some trips break business rules, and the producer starts sending fields nobody t
 | Incremental gold: only the dates a batch touched are rebuilt | [`gold.py`](lakehouse/gold.py) |
 | Quality gates that stop the run (reconciliation, uniqueness, SCD2 integrity) | [`quality.py`](lakehouse/quality.py) |
 | `OPTIMIZE`, `ZORDER BY` and `VACUUM`; time travel in tests | [`maintenance.py`](lakehouse/maintenance.py) |
+| Change Data Feed so consumers read only inserted and updated trips | [`changes.py`](lakehouse/changes.py) |
 | A JSON run record per batch for observability | `lake/_runs/<date>.json` |
 
 ## Architecture
@@ -79,6 +80,7 @@ make run                        # 14 days of landing files, processed day by day
 make reprocess DATE=2026-01-05  # re-run one day: nothing changes
 make maintain                   # OPTIMIZE / Z-ORDER / VACUUM
 make report                     # gold totals, quarantine, drift, table versions
+python -m lakehouse changes --since 1   # Change Data Feed: inserts and updates per commit
 make test
 ```
 

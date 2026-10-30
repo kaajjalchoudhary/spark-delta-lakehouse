@@ -23,6 +23,8 @@ def get_spark(app_name: str = "lakehouse") -> SparkSession:
         .config("spark.sql.sources.parallelPartitionDiscovery.parallelism", "8")
         .config("spark.driver.memory", os.getenv("SPARK_DRIVER_MEMORY", "2g"))
         .config("spark.databricks.delta.snapshotPartitions", "2")
+        # Record row-level changes on every new table so consumers can read only what changed.
+        .config("spark.databricks.delta.properties.defaults.enableChangeDataFeed", "true")
         # VACUUM below the 7-day default is only for the local demo of maintenance.
         .config("spark.databricks.delta.retentionDurationCheck.enabled", "false")
     )

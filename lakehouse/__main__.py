@@ -30,6 +30,8 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument("--trips-per-day", type=int, default=defaults.trips_per_day)
     one = sub.add_parser("process", help="(re)process a single day that has already landed")
     one.add_argument("--date", type=date.fromisoformat, required=True)
+    cdf = sub.add_parser("changes", help="Change Data Feed summary for silver.trips")
+    cdf.add_argument("--since", type=int, default=0, help="first table version to include")
     sub.add_parser("maintain", help="OPTIMIZE / Z-ORDER / VACUUM every table")
     sub.add_parser("report", help="print a summary of the lake")
     args = parser.parse_args(argv)
@@ -44,7 +46,7 @@ def main(argv: list[str] | None = None) -> int:
             return 0
 
     # Spark is imported lazily so `generate` works without a JVM.
-    from lakehouse import maintenance, pipeline, report
+    from lakehouse import changes, maintenance, pipeline, report
     from lakehouse.spark import get_spark
 
     spark = get_spark()
@@ -54,6 +56,8 @@ def main(argv: list[str] | None = None) -> int:
             print(report.build_report(spark, lake))
         elif args.command == "process":
             pipeline.run_batch(spark, lake, args.date)
+        elif args.command == "changes":
+            changes.change_summary(spark, lake, args.since).show(200, truncate=False)
         elif args.command == "maintain":
             maintenance.maintain(spark, lake)
         elif args.command == "report":

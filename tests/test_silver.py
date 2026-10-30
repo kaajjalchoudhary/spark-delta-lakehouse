@@ -12,7 +12,7 @@ pytest.importorskip("delta")
 
 from pyspark.sql import functions as F  # noqa: E402
 
-from lakehouse import bronze, silver  # noqa: E402
+from lakehouse import bronze, changes, silver  # noqa: E402
 from lakehouse.config import Lake  # noqa: E402
 
 
@@ -100,3 +100,21 @@ def test_undeclared_fields_are_reported(spark, lake: Lake) -> None:
     stats = process(spark, lake, "2026-01-01")
     assert stats.unexpected_fields == ["surge_multiplier"]
     assert trips_table(spark, lake)["A"].tip_amount == 2.0
+
+
+def test_change_data_feed_shows_inserts_and_fare_adjustments(spark, lake: Lake) -> None:
+    land(lake, "2026-01-01", [trip("A", 20.0, "2026-01-01T10:20:00")])
+    process(spark, lake, "2026-01-01")
+    land(lake, "2026-01-02", [
+        trip("A", 18.0, "2026-01-02T08:00:00"),
+        trip("C", 12.0, "2026-01-02T10:20:00", pickup="2026-01-02T10:00:00"),
+    ])
+    process(spark, lake, "2026-01-02")
+
+    rows = changes.changes(spark, lake, "silver", "trips", since_version=1).collect()
+    got = sorted((r.trip_id, r._change_type, r.fare_amount) for r in rows)
+    assert got == [
+        ("A", "update_postimage", 18.0),
+        ("A", "update_preimage", 20.0),
+        ("C", "insert", 12.0),
+    ]
